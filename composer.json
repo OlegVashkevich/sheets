@@ -1,0 +1,31 @@
+{
+  "name": "olegv/sheets",
+  "description": "Google sheets manager",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Oleg Vashkevich",
+      "email": "ugluk@tut.by"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "OlegV\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^11.0"
+  },
+  "require": {
+    "php": "^8.2",
+    "ext-curl": "*",
+    "adhocore/jwt": "^1.1",
+    "ext-openssl": "*"
+  }
+}
