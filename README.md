@@ -1,4 +1,5 @@
-# sheets
+# Sheets
+Lib for work with google sheets
 ## Features
 - lightweight
 - dependency-free(only curl and openssl)
