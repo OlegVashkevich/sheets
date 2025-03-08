@@ -28,12 +28,12 @@
   },
   "require-dev": {
     "phpstan/phpstan": "^2.1",
-    "phpunit/phpunit": "^11.0"
+    "phpunit/phpunit": "^11.0",
+    "phpstan/phpstan-strict-rules": "^2.0"
   },
   "require": {
     "php": "^8.2",
     "ext-curl": "*",
-    "ext-openssl": "*",
-    "phpstan/phpstan-strict-rules": "^2.0"
+    "ext-openssl": "*"
   }
 }
