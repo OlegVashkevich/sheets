@@ -49,8 +49,8 @@ jobs:
            CREDENTIALS: ${{secrets.CREDENTIALS}}
          shell: bash
          run: |
-           echo "$CREDENTIALS" >> ./config/sheet.json
-           cat ./config/sheet.json
+           echo "$CREDENTIALS" >> credentials.json
+           cat credentials.json
 
       - name: "Tests"
         run: "./vendor/phpunit/phpunit/phpunit --no-configuration ./tests"

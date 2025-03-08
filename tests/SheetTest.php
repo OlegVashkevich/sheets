@@ -14,7 +14,7 @@ class SheetTest extends TestCase
      */
     public function testAppend(): void
     {
-        $sheet = new Sheet("1cPmurA1B6TzUCvchc_wG3YnI0DwN0_9ZS5nsnZO8PRw", __DIR__.'/../config/sheet.json');
+        $sheet = new Sheet("1cPmurA1B6TzUCvchc_wG3YnI0DwN0_9ZS5nsnZO8PRw", __DIR__.'/../credentials.json');
         $response = $sheet->setSheet('Sheet1')->append(
             [[1, 2, "Text", "Текст", "many words many words many words", 6, 7, 8, 9]],
             'R1C1',
@@ -37,7 +37,7 @@ class SheetTest extends TestCase
      */
     public function testGetAndUpdate(): void
     {
-        $sheet = new Sheet("1cPmurA1B6TzUCvchc_wG3YnI0DwN0_9ZS5nsnZO8PRw", __DIR__.'/../config/sheet.json');
+        $sheet = new Sheet("1cPmurA1B6TzUCvchc_wG3YnI0DwN0_9ZS5nsnZO8PRw", __DIR__.'/../credentials.json');
         $sheet->setSheet('Sheet1');
         $response = $sheet->get(
             'A6:C6',
