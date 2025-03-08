@@ -45,7 +45,8 @@ class Sheet
      */
     public function append(array $values, string $range = ''): string
     {
-        $range = $range ? "!$range" : '';
+        $return = '';
+        $range = $this->getRange($range);
         $body = json_encode([
             'values' => $values,
         ]);
@@ -53,9 +54,9 @@ class Sheet
             .$this->spreadsheet_id.'/values/'.$this->sheet.$range.':append?valueInputOption=RAW&alt=json';
         if (is_string($body)) {
             $response = $this->request($uri, $body);
-            return $this->validateResponse($response);
+            $return = $this->validateResponse($response);
         }
-        return '';
+        return $return;
     }
 
     /**
@@ -65,7 +66,7 @@ class Sheet
      */
     public function clear(string $range = ''): string
     {
-        $range = $range ? "!$range" : '';
+        $range = $this->getRange($range);
         $uri = 'https://sheets.googleapis.com/v4/spreadsheets/'
             .$this->spreadsheet_id.'/values/'.$this->sheet.$range.':clear?alt=json';
 
@@ -81,7 +82,8 @@ class Sheet
      */
     public function update(array $values, string $range = ''): string
     {
-        $range = $range ? "!$range" : '';
+        $return = '';
+        $range = $this->getRange($range);
         $body = json_encode([
             'values' => $values,
         ]);
@@ -89,9 +91,9 @@ class Sheet
             .$this->spreadsheet_id.'/values/'.$this->sheet.$range.'?valueInputOption=RAW&alt=json';
         if (is_string($body)) {
             $response = $this->request($uri, $body, 'PUT');
-            return $this->validateResponse($response);
+            $return = $this->validateResponse($response);
         }
-        return '';
+        return $return;
     }
 
     /**
@@ -101,7 +103,7 @@ class Sheet
      */
     public function get(string $range = ''): string
     {
-        $range = $range ? "!$range" : '';
+        $range = $this->getRange($range);
         $uri = 'https://sheets.googleapis.com/v4/spreadsheets/'
             .$this->spreadsheet_id.'/values/'.$this->sheet.$range.'?alt=json';
 
@@ -115,7 +117,7 @@ class Sheet
     private function auth(): void
     {
         $token = $this->getAuthToken();
-        if ($token != '') {
+        if ($token !== '') {
             $data = [
                 'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
                 'assertion' => $token,
@@ -158,35 +160,28 @@ class Sheet
             "exp" => time() + 3600,
         ];
 
-        $isError = false;
         $signature = '';
 
         $header = json_encode($header, JSON_UNESCAPED_SLASHES);
         if (is_string($header)) {
             $header = rtrim(strtr(base64_encode($header), '+/', '-_'), '=');
-        } else {
-            $isError = true;
         }
+
         $payload = json_encode($payload, JSON_UNESCAPED_SLASHES);
         if (is_string($payload)) {
             $payload = rtrim(strtr(base64_encode($payload), '+/', '-_'), '=');
-        } else {
-            $isError = true;
         }
+
         $key = openssl_pkey_get_private($this->credentials->private_key);
         if (!is_bool($key)) {
             $isOK = openssl_sign($header.'.'.$payload, $signature, $key, OPENSSL_ALGO_SHA256);
             if ($isOK && is_string($signature)) {
                 $signature = base64_encode($signature);
                 $signature = rtrim(strtr($signature, '+/', '-_'), '=');
-            } else {
-                $isError = true;
             }
-        } else {
-            $isError = true;
         }
 
-        if (!$isError && is_string($header) && is_string($payload) && is_string($signature)) {
+        if (is_string($header) && is_string($payload) && is_string($signature)) {
             return $header.'.'.$payload.'.'.$signature;
         }
 
@@ -204,19 +199,20 @@ class Sheet
     {
         $ch = curl_init($uri);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        if ($method == 'POST') {
+        if ($method === 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
-        } elseif ($method) {
+        } elseif ($method === 'PUT' || $method === 'GET') {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         }
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        if ($this->access_token != '') {
+        if ($this->access_token !== '') {
             $authorization = "Authorization: Bearer ".$this->access_token;
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', $authorization]);
         }
         $response = curl_exec($ch);
+        curl_close($ch);
         if ($response === false) {
             throw new Exception(curl_error($ch));
         } elseif (is_string($response)) {
@@ -239,6 +235,14 @@ class Sheet
             }
         }
         return $response;
+    }
+
+    private function getRange(string $range): string
+    {
+        if ($range !== '') {
+            return "!$range";
+        }
+        return '';
     }
 
 }

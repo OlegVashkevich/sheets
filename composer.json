@@ -1,6 +1,14 @@
 {
   "name": "olegv/sheets",
   "description": "Google sheets manager",
+  "keywords": [
+    "library",
+    "google",
+    "sheets",
+    "api",
+    "lightweight",
+    "dependency-free"
+  ],
   "license": "MIT",
   "authors": [
     {
@@ -25,6 +33,7 @@
   "require": {
     "php": "^8.2",
     "ext-curl": "*",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "phpstan/phpstan-strict-rules": "^2.0"
   }
 }
