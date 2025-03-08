@@ -1,0 +1,48 @@
+# https://help.github.com/en/categories/automating-your-workflow-with-github-actions
+
+name: "PHPStan"
+
+on:
+  pull_request:
+    paths:
+      - '**.php'
+  push:
+    branches:
+      - "master"
+    paths:
+      - '**.php'
+
+jobs:
+  tests:
+    name: "PHPStan"
+
+    runs-on: ${{ matrix.operating-system }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - "8.2"
+          - "8.3"
+          - "8.4"
+        operating-system: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+          ini-file: development
+          extensions: mbstring
+
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: "lowest"
+
+      - name: "Run PHPStan"
+        run: "./vendor/bin/phpstan --error-format=github"
